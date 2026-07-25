@@ -58,14 +58,16 @@ def rag_search(chat_id: str, query: str, mode: Literal["overview", "semantic"]) 
 
 @tool
 def web_search(query: str, num_results: int = 5) -> str:
-    """Perform a web search using DuckDuckGo to answer general knowledge or current events questions."""
+    """Perform a web search using DuckDuckGo to answer general knowledge or current events questions. Keep the query short and simple (2-4 keywords)."""
+    import warnings
+    warnings.filterwarnings("ignore", category=RuntimeWarning)
     print(f"  [Tool] web_search(query={query})")
     try:
         from duckduckgo_search import DDGS
-        with DDGS() as ddgs:
-            results = list(ddgs.text(query, max_results=num_results))
+        ddgs = DDGS()
+        results = list(ddgs.text(query, max_results=num_results))
         if not results:
-            return "No web search results found."
+            return "No web search results found. YOUR QUERY WAS LIKELY TOO LONG OR COMPLEX. Please try again with a much simpler, shorter query (e.g., 2-4 keywords)."
         
         formatted = []
         for i, res in enumerate(results, 1):
