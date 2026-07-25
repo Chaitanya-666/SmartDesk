@@ -110,8 +110,13 @@ def orchestrator(state: GraphState) -> dict:
     registry.refresh()
     skill_summaries = registry.get_skill_summaries()
 
+    import datetime
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     prompt = f"""You are the Orchestrator of a hierarchical multi-agent AI system.
 You must assign ONE task at a time to the most appropriate agent.
+
+CURRENT DATE & TIME: {current_time}
 
 USER PROFILE CONTEXT:
 - Your active/primary email address is: {gmail_address}. If the user refers to "my email", "this email", "self email", or wants to send something to themselves, use exactly this address: {gmail_address}.

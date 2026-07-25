@@ -120,6 +120,9 @@ def knowledge_agent(state: GraphState) -> dict:
 
     has_tool_message = any(isinstance(m, ToolMessage) for m in state["knowledge_messages"])
     
+    import datetime
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
     sys_prompt = f"""You are KnowledgeAgent. You handle summarization, research, writing tasks, and document Q&A.
 
 Task: {task.instruction}
@@ -127,6 +130,7 @@ Expected Output: {task.expected_output}
 Context (artifact payloads from prior tasks): {json.dumps(context)}
 Current Chat ID: {state.get("chat_id", "unknown")}
 Uploaded Documents: {json.dumps(state.get("uploaded_documents", []))}
+CURRENT DATE & TIME: {current_time}
 
 You have access to the user's personal knowledge base via the `rag_search` tool, AND the open internet via `web_search`.
 The documents you search with `rag_search` are ONLY the documents uploaded in the CURRENT CHAT.
