@@ -19,7 +19,7 @@ def generator_node(state: GraphState) -> dict:
     task = state["current_task"]
     print(f"\n--- [SkillGenerator] Designing skill for: {task.id} ---")
     
-    llm = get_llm(model_name=MODEL_NAME, temperature=0).with_structured_output(GeneratedSkill)
+    llm = get_llm(model_name=MODEL_NAME, temperature=0, max_tokens=1500).with_structured_output(GeneratedSkill)
     
     sys_prompt = f"""You are an Expert Python Engineer. 
 Your task is to write a LangChain tool to fulfill this requirement: {task.instruction}

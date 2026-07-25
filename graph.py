@@ -45,7 +45,7 @@ class OrchestratorDecision(BaseModel):
         None, description="Final message to user when finished."
     )
 
-orchestrator_llm = get_llm(model_name=MODEL_NAME, temperature=0).with_structured_output(
+orchestrator_llm = get_llm(model_name=MODEL_NAME, temperature=0, max_tokens=800).with_structured_output(
     OrchestratorDecision
 )
 
@@ -62,7 +62,7 @@ def orchestrator(state: GraphState) -> dict:
 
     completed = [
         {"id": t.id, "agent": t.agent, "status": t.status, "instruction": t.instruction}
-        for t in state.get("completed_tasks", [])
+        for t in state.get("completed_tasks", [])[-5:] # Truncate to last 5
     ]
 
     # ── Build artifact summaries for the Orchestrator prompt ───────────────────
@@ -92,7 +92,7 @@ def orchestrator(state: GraphState) -> dict:
         artifact_summaries.append(summary)
 
     chat_history_str = ""
-    for m in state.get("messages", []):
+    for m in state.get("messages", [])[-6:]: # Truncate to last 6 messages
         role = "User" if m.type == "human" else "Assistant"
         chat_history_str += f"{role}: {m.content}\n"
 
