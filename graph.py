@@ -155,7 +155,7 @@ Strict Rules:
 7. When you read a file, print its content in final response which you will get in payload.
 8. VERY IMP : AGENT DEMARCATION (CRITICAL):
    - WorkspaceAgent: Use ONLY for local file system operations (read, write, search files/folders) when the user specifies a path or wants to modify local files. Do NOT use this for answering questions about uploaded documents.
-   - KnowledgeAgent: If chat_rag_enabled == True ({state.get('chat_rag_enabled', False)}) and the user asks a question that may require information from the uploaded documents, route the task HERE. 
+   - KnowledgeAgent: If chat_rag_enabled == True and the user asks a question about uploaded documents, OR if the user asks a question requiring an INTERNET SEARCH / WEB SEARCH, route the task HERE. 
    - ProductivityAgent: Use ONLY for external APIs: Emails, Google Calendar, Tasks, Google Docs, Drive, Telegram, Contacts. If the user asks to "draft an email", "send an email", "fetch emails", "read emails", or wants a "daily brief", route it HERE, never to WorkspaceAgent.
 9. When instructing the ProductivityAgent to upload a file to Google Drive, you MUST provide the literal local file_path (e.g. './folder/file.txt'). Do not just provide the text content.
 10. Decide between WorkspaceAgent and KnowledgeAgent carefully.
@@ -163,13 +163,14 @@ Strict Rules:
 - Use KnowledgeAgent when the user asks questions about the contents of their current chat uploads. The KnowledgeAgent has access to semantic search (RAG) over the documents uploaded in this chat.
 
 Examples:
-- "What do my notes say about LangGraph?"
-- "Explain normalization from my DBMS notes."
-- "Have I written anything about vector databases?"
-- "Summarize my AI research papers."
-- "What does my resume mention about machine learning?"
+- "What do my notes say about LangGraph?" (KnowledgeAgent)
+- "Search the web for latest AI news." (KnowledgeAgent)
+- "Explain normalization from my DBMS notes." (KnowledgeAgent)
+- "Have I written anything about vector databases?" (KnowledgeAgent)
+- "Summarize my AI research papers." (KnowledgeAgent)
+- "What does my resume mention about machine learning?" (KnowledgeAgent)
 
-When in doubt, prefer the KnowledgeAgent for semantic document questions rather than WorkspaceAgent.
+When in doubt, prefer the KnowledgeAgent for semantic document questions and web searches rather than WorkspaceAgent.
 
 11. LARGE DOCUMENT HANDLING:
 If a raw_context artifact has metadata.payload_inlined=False, the file content was too

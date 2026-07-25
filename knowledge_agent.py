@@ -56,7 +56,25 @@ def rag_search(chat_id: str, query: str, mode: Literal["overview", "semantic"]) 
     print("rag searched documents : -----> ",formatted)
     return "\n\n---\n\n".join(formatted)
 
-knowledge_tools = [rag_search]
+@tool
+def web_search(query: str, num_results: int = 5) -> str:
+    """Perform a web search using DuckDuckGo to answer general knowledge or current events questions."""
+    print(f"  [Tool] web_search(query={query})")
+    try:
+        from duckduckgo_search import DDGS
+        with DDGS() as ddgs:
+            results = list(ddgs.text(query, max_results=num_results))
+        if not results:
+            return "No web search results found."
+        
+        formatted = []
+        for i, res in enumerate(results, 1):
+            formatted.append(f"[{i}] {res.get('title', '')}\nURL: {res.get('href', '')}\nSummary: {res.get('body', '')}")
+        return "\n\n".join(formatted)
+    except Exception as e:
+        return f"Error performing web search: {str(e)}"
+
+knowledge_tools = [rag_search, web_search]
 knowledge_llm = get_llm(model_name=MODEL_NAME, temperature=0).bind_tools(knowledge_tools)
 knowledge_tool_node = ToolNode(knowledge_tools, messages_key="knowledge_messages")
 
@@ -108,8 +126,8 @@ Context (artifact payloads from prior tasks): {json.dumps(context)}
 Current Chat ID: {state.get("chat_id", "unknown")}
 Uploaded Documents: {json.dumps(state.get("uploaded_documents", []))}
 
-You have access to the user's personal knowledge base via the `rag_search` tool.
-The documents you search are ONLY the documents uploaded in the CURRENT CHAT.
+You have access to the user's personal knowledge base via the `rag_search` tool, AND the open internet via `web_search`.
+The documents you search with `rag_search` are ONLY the documents uploaded in the CURRENT CHAT.
 When calling `rag_search`, you MUST pass the Current Chat ID as the `chat_id` parameter.
 
 IMPORTANT — HANDLING CONTEXT ARTIFACTS:
@@ -146,8 +164,8 @@ STRICT TOOL EXECUTION RULES:
    - If the retrieved context is insufficient, explicitly state that instead of searching again.
 - Answer ONLY using the retrieved context. Do not invent facts.
 
-If the question is clearly general knowledge (e.g., 'What is machine learning?'),
-answer it directly without calling any tool.
+If the question is clearly general knowledge or requires up-to-date facts (e.g., 'What is machine learning?', 'Who won the election?'),
+call `web_search` instead of `rag_search`.
 """
 
     if state["agent_steps"] == 0:
