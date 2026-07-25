@@ -170,6 +170,7 @@ STRICT TOOL EXECUTION RULES:
    - If the retrieved context is insufficient, explicitly state that instead of searching again.
 - Answer ONLY using the retrieved context. Do not invent facts.
 
+If the task explicitly asks you to "perform a web search", you MUST call `web_search`.
 If the question is clearly general knowledge or requires up-to-date facts (e.g., 'What is machine learning?', 'Who won the election?'),
 call `web_search` instead of `rag_search`.
 """

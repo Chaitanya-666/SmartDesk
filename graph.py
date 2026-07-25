@@ -200,6 +200,8 @@ Rule 12a — Never re-read a file already captured as a raw_context artifact.
 
 Rule 12b — If more than 2 tasks completed without resolving the user query,
   set finished=True with the best available explanation rather than looping.
+
+CRITICAL INSTRUCTION: You are communicating with an API that REQUIRES structured output. You MUST format your entire response as the OrchestratorDecision tool call. Do NOT output any conversational text or markdown before or after the tool call!
 """
 
     decision: OrchestratorDecision = orchestrator_llm.invoke(
