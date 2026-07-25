@@ -293,6 +293,7 @@ if should_run:
                 "WorkspaceAgent":   "🗂️",
                 "KnowledgeAgent":   "🧠",
                 "ProductivityAgent": "📅",
+                "SkillAgent":        "🚀",
             }
             
             final_result = None

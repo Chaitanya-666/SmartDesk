@@ -18,6 +18,8 @@ from state import GraphState, Task, ArtifactType
 from workspace_agent import build_workspace_subgraph
 from knowledge_agent import build_knowledge_subgraph
 from productivity_agent import build_productivity_subgraph
+from skill_agent import build_skill_subgraph
+from skills_registry import registry
 
 os.environ["LANGGRAPH_ALLOWED_MSGPACK_MODULES"] = "state"
 load_dotenv()
@@ -28,7 +30,7 @@ MODEL_NAME = "openai/gpt-oss-120b"
 # =========================================================
 
 class OrchestratorTask(BaseModel):
-    agent: Literal["WorkspaceAgent", "KnowledgeAgent", "ProductivityAgent"]
+    agent: Literal["WorkspaceAgent", "KnowledgeAgent", "ProductivityAgent", "SkillAgent"]
     instruction: str
     context_artifacts: List[str] = Field(default_factory=list)
     expected_output: str
@@ -103,6 +105,9 @@ def orchestrator(state: GraphState) -> dict:
                 long_term_mem_str += f"- {str(m)}\n"
 
     gmail_address = os.getenv("GMAIL_ADDRESS", "unknown")
+    
+    registry.refresh()
+    skill_summaries = registry.get_skill_summaries()
 
     prompt = f"""You are the Orchestrator of a hierarchical multi-agent AI system.
 You must assign ONE task at a time to the most appropriate agent.
@@ -124,9 +129,11 @@ Completed Tasks (with instructions):
 Available Artifacts:
 {json.dumps(artifact_summaries, indent=2)}
 
+Available Dynamic Skills (Route to SkillAgent if using one of these):
+{skill_summaries}
 
 Strict Rules:
-1. Assign exactly ONE next task to WorkspaceAgent, KnowledgeAgent, or ProductivityAgent.
+1. Assign exactly ONE next task to WorkspaceAgent, KnowledgeAgent, ProductivityAgent, or SkillAgent.
 2. Look at the completed task instructions carefully. If all tasks required to fulfill the user query are completed, set finished=True NOW.
 3. Do NOT repeat a task type that is already completed.
 4. Only assign tasks that are directly necessary to answer the user query.
@@ -260,6 +267,7 @@ def build_graph():
     builder.add_node("WorkspaceAgent", build_workspace_subgraph())
     builder.add_node("KnowledgeAgent", build_knowledge_subgraph())
     builder.add_node("ProductivityAgent", build_productivity_subgraph())
+    builder.add_node("SkillAgent", build_skill_subgraph())
 
     # ── Entry ─────────────────────────────────────────────
     builder.add_edge(START, "Orchestrator")
@@ -271,6 +279,7 @@ def build_graph():
     builder.add_edge("WorkspaceAgent", "Orchestrator")
     builder.add_edge("KnowledgeAgent", "Orchestrator")
     builder.add_edge("ProductivityAgent", "Orchestrator")
+    builder.add_edge("SkillAgent", "Orchestrator")
 
     return builder.compile(checkpointer=checkpointer)
 
@@ -290,6 +299,7 @@ if __name__ == "__main__":
         "workspace_messages": [],
         "knowledge_messages": [],
         "productivity_messages": [],
+        "skill_messages": [],
         "current_task": None,
         "completed_tasks": [],
         "artifacts": {},
