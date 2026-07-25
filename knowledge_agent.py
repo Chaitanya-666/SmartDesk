@@ -163,10 +163,10 @@ You must classify the user's request into one of two intents before calling `rag
    - When calling with mode="semantic", you MUST pass the complete natural-language user question as the `query`. Do NOT reduce it to generic words like "document" or "pdf".
 
 STRICT TOOL EXECUTION RULES:
-- If no ToolMessage exists yet, decide whether retrieval is needed.
+- If no ToolMessage exists yet, decide whether retrieval or web search is needed.
 - If a ToolMessage already exists (meaning you have already received search results):
-   - NEVER call `rag_search` again. Each task should invoke `rag_search` at most once.
-   - Generate the final answer from the retrieved chunks.
+   - NEVER call `rag_search` or `web_search` again. Each task should invoke a tool at most once.
+   - Generate the final answer from the retrieved chunks/web results.
    - If the retrieved context is insufficient, explicitly state that instead of searching again.
 - Answer ONLY using the retrieved context. Do not invent facts.
 
