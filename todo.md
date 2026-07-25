@@ -23,3 +23,7 @@
 ## Phase 4: DevOps (Fork Exclusive)
 1. [ ] CI/CD Pipelines
 2. [ ] Docker Containerization
+
+## Phase 5: Future Polish & Scaling
+1. [ ] Intent Confirmation HITL: Have the Orchestrator explain its plan for a new skill and ask for user confirmation *before* spinning up the heavy SkillGeneratorAgent.
+2. [ ] LLM Provider Switch: Migrate from `gpt-oss-120b` to stronger OpenRouter models for complex skill generation tasks if needed.
