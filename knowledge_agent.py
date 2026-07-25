@@ -77,12 +77,10 @@ def web_search(query: str, num_results: int = 5) -> str:
     if not results:
         return "No web search results found. YOUR QUERY WAS LIKELY TOO LONG OR COMPLEX. Please try again with a much simpler, shorter query (e.g., 2-4 keywords)."
         
-        formatted = []
-        for i, res in enumerate(results, 1):
-            formatted.append(f"[{i}] {res.get('title', '')}\nURL: {res.get('href', '')}\nSummary: {res.get('body', '')}")
-        return "\n\n".join(formatted)
-    except Exception as e:
-        return f"Error performing web search: {str(e)}"
+    formatted = []
+    for i, res in enumerate(results, 1):
+        formatted.append(f"[{i}] {res.get('title', '')}\nURL: {res.get('href', '')}\nSummary: {res.get('body', '')}")
+    return "\n\n".join(formatted)
 
 knowledge_tools = [rag_search, web_search]
 knowledge_llm = get_llm(model_name=MODEL_NAME, temperature=0).bind_tools(knowledge_tools)
