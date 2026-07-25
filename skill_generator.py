@@ -9,7 +9,7 @@ from langgraph.graph import END, START, StateGraph
 from state import GraphState, Artifact, ArtifactType
 
 MODEL_NAME = "openai/gpt-oss-120b"
-MAX_RETRIES = 3
+MAX_RETRIES = 2
 
 class GeneratedSkill(BaseModel):
     skill_name: str = Field(..., description="A snake_case name for the skill.")
@@ -76,14 +76,17 @@ Rules:
                 error_msg = f"Execution failed with return code {result.returncode}.\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}\nFix the code."
                 messages.append(HumanMessage(content=error_msg))
                 attempt += 1
+                time.sleep(5) # Respect TPM limits
                 
         except subprocess.TimeoutExpired:
             print("  [ValidationSandbox] TIMEOUT. Sending warning to LLM.")
             messages.append(HumanMessage(content="Execution timed out after 10 seconds. Fix infinite loops or hanging network calls."))
             attempt += 1
+            time.sleep(5)
         except Exception as e:
             messages.append(HumanMessage(content=f"LLM Parsing error: {str(e)}"))
             attempt += 1
+            time.sleep(5)
 
     generator_data = {
         "success": success,

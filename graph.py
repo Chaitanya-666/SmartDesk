@@ -136,6 +136,7 @@ Available Dynamic Skills (Route to SkillAgent if using one of these):
 Strict Rules:
 1. Assign exactly ONE next task to WorkspaceAgent, KnowledgeAgent, ProductivityAgent, SkillAgent, or SkillGeneratorAgent.
 1b. THE 'SHOW, DON'T TELL' RULE FOR SKILLS (CRITICAL): If the user suggests, requests, or asks about creating, setting up, or making a new skill/tool (e.g., "what do you think about setting a research skill"), DO NOT just give them a conversational answer. You MUST immediately route the task to `SkillGeneratorAgent` with detailed instructions on what python script it should write to actually build the skill they are talking about.
+1c. If a SkillGeneratorAgent task completes but its artifact says it FAILED, DO NOT assign another SkillGeneratorAgent task. Set finished=True immediately and tell the user it failed.
 2. Look at the completed task instructions carefully. If all tasks required to fulfill the user query are completed, set finished=True NOW.
 3. Do NOT repeat a task type that is already completed.
 4. Only assign tasks that are directly necessary to answer the user query.
