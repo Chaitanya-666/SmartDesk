@@ -12,8 +12,8 @@
 1. [x] Proper UI implementation (Streamlit Premium Dark-Mode Glassmorphism)
 
 ## Phase 3: Dynamic Skills Architecture (HITL & Sandbox)
-1. [ ] Create `skills/` and `skills_sandbox/` directories.
-2. [ ] Build `skills_registry.py` to scan directories, parse python scripts, and dynamically convert them to LangChain `StructuredTool` objects.
+1. [x] Create `skills/` and `skills_sandbox/` directories.
+2. [x] Build `skills_registry.py` to scan directories, parse python scripts, and dynamically convert them to LangChain `StructuredTool` objects.
 3. [ ] Update Orchestrator to support reasoning-based Skill Detection (semantically search registry).
 4. [ ] Implement HITL Consent Flow: Agent pauses and asks user for permission to execute an existing skill.
 5. [ ] Implement Skill Generator Node: An LLM node prompted as an expert engineer to write python functions + Pydantic schemas for missing capabilities.
