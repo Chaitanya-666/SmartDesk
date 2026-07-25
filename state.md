@@ -67,4 +67,9 @@
 - [x] Implement Email Reply Feature (Read unread emails, reply using SMTP/IMAP).
 - [x] Implement Human-in-the-loop (HITL) for critical actions.
 - [ ] Comprehensive End-to-End Testing of Productivity Agent.
-- [ ] Future: Keep "Skills" integration in mind.
+
+## New Roadmap (Late July 2026)
+1. **Proper UI implementation**: Build a really good, premium interface (Streamlit).
+2. **Skills Architecture (Hermes-inspired)**: Allow agents to learn and generate reusable "skills" when encountering repetitive/complex tasks or by explicit user instruction.
+3. **Bug Fixes**: Resolve any remaining issues in the system.
+4. **Fork-Exclusive (CI/CD & Docker)**: Implement deployment pipelines and containerization exclusively on the `Chaitanya-666` fork remote.
