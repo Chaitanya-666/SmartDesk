@@ -59,15 +59,23 @@ def rag_search(chat_id: str, query: str, mode: Literal["overview", "semantic"]) 
 @tool
 def web_search(query: str, num_results: int = 5) -> str:
     """Perform a web search using DuckDuckGo to answer general knowledge or current events questions. Keep the query short and simple (2-4 keywords)."""
-    import warnings
-    warnings.filterwarnings("ignore", category=RuntimeWarning)
     print(f"  [Tool] web_search(query={query})")
+    
+    import sys, io
+    original_stderr = sys.stderr
+    sys.stderr = io.StringIO()  # Suppress the noisy DDGS warning
     try:
         from duckduckgo_search import DDGS
         ddgs = DDGS()
         results = list(ddgs.text(query, max_results=num_results))
-        if not results:
-            return "No web search results found. YOUR QUERY WAS LIKELY TOO LONG OR COMPLEX. Please try again with a much simpler, shorter query (e.g., 2-4 keywords)."
+    except Exception as e:
+        sys.stderr = original_stderr
+        return f"Error performing web search: {str(e)}"
+    finally:
+        sys.stderr = original_stderr
+        
+    if not results:
+        return "No web search results found. YOUR QUERY WAS LIKELY TOO LONG OR COMPLEX. Please try again with a much simpler, shorter query (e.g., 2-4 keywords)."
         
         formatted = []
         for i, res in enumerate(results, 1):
@@ -181,9 +189,15 @@ call `web_search` instead of `rag_search`.
         messages = [SystemMessage(content=sys_prompt)] + state["knowledge_messages"]
 
     time.sleep(2)
-    response = knowledge_llm.invoke(messages)
+    
+    # Physically prevent loops: If we already searched, unbind the tools so the LLM MUST summarize.
+    if has_tool_message:
+        raw_llm = get_llm(model_name=MODEL_NAME, temperature=0)
+        response = raw_llm.invoke(messages)
+    else:
+        response = knowledge_llm.invoke(messages)
 
-    if response.tool_calls:
+    if hasattr(response, "tool_calls") and response.tool_calls:
         print(f"  [KnowledgeAgent] Tool calls: {[tc['name'] for tc in response.tool_calls]}")
     else:
         print("  [KnowledgeAgent] Done — no more tool calls.")
