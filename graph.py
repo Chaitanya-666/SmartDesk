@@ -19,6 +19,7 @@ from workspace_agent import build_workspace_subgraph
 from knowledge_agent import build_knowledge_subgraph
 from productivity_agent import build_productivity_subgraph
 from skill_agent import build_skill_subgraph
+from skill_generator import build_skill_generator_subgraph
 from skills_registry import registry
 
 os.environ["LANGGRAPH_ALLOWED_MSGPACK_MODULES"] = "state"
@@ -30,7 +31,7 @@ MODEL_NAME = "openai/gpt-oss-120b"
 # =========================================================
 
 class OrchestratorTask(BaseModel):
-    agent: Literal["WorkspaceAgent", "KnowledgeAgent", "ProductivityAgent", "SkillAgent"]
+    agent: Literal["WorkspaceAgent", "KnowledgeAgent", "ProductivityAgent", "SkillAgent", "SkillGeneratorAgent"]
     instruction: str
     context_artifacts: List[str] = Field(default_factory=list)
     expected_output: str
@@ -133,7 +134,8 @@ Available Dynamic Skills (Route to SkillAgent if using one of these):
 {skill_summaries}
 
 Strict Rules:
-1. Assign exactly ONE next task to WorkspaceAgent, KnowledgeAgent, ProductivityAgent, or SkillAgent.
+1. Assign exactly ONE next task to WorkspaceAgent, KnowledgeAgent, ProductivityAgent, SkillAgent, or SkillGeneratorAgent.
+1b. If the user explicitly asks you to "create a skill" OR if you realize you need a capability that does not exist in any of your tools, assign the task to SkillGeneratorAgent with detailed instructions on what python script it should write.
 2. Look at the completed task instructions carefully. If all tasks required to fulfill the user query are completed, set finished=True NOW.
 3. Do NOT repeat a task type that is already completed.
 4. Only assign tasks that are directly necessary to answer the user query.
@@ -268,6 +270,7 @@ def build_graph():
     builder.add_node("KnowledgeAgent", build_knowledge_subgraph())
     builder.add_node("ProductivityAgent", build_productivity_subgraph())
     builder.add_node("SkillAgent", build_skill_subgraph())
+    builder.add_node("SkillGeneratorAgent", build_skill_generator_subgraph())
 
     # ── Entry ─────────────────────────────────────────────
     builder.add_edge(START, "Orchestrator")
@@ -280,6 +283,7 @@ def build_graph():
     builder.add_edge("KnowledgeAgent", "Orchestrator")
     builder.add_edge("ProductivityAgent", "Orchestrator")
     builder.add_edge("SkillAgent", "Orchestrator")
+    builder.add_edge("SkillGeneratorAgent", "Orchestrator")
 
     return builder.compile(checkpointer=checkpointer)
 
@@ -300,6 +304,7 @@ if __name__ == "__main__":
         "knowledge_messages": [],
         "productivity_messages": [],
         "skill_messages": [],
+        "generator_data": {},
         "current_task": None,
         "completed_tasks": [],
         "artifacts": {},

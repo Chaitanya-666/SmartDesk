@@ -294,6 +294,7 @@ if should_run:
                 "KnowledgeAgent":   "🧠",
                 "ProductivityAgent": "📅",
                 "SkillAgent":        "🚀",
+                "SkillGeneratorAgent": "⚙️",
             }
             
             final_result = None

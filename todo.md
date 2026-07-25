@@ -16,9 +16,9 @@
 2. [x] Build `skills_registry.py` to scan directories, parse python scripts, and dynamically convert them to LangChain `StructuredTool` objects.
 3. [x] Update Orchestrator to support reasoning-based Skill Detection (semantically search registry).
 4. [x] Implement HITL Consent Flow: Agent pauses and asks user for permission to execute an existing skill.
-5. [ ] Implement Skill Generator Node: An LLM node prompted as an expert engineer to write python functions + Pydantic schemas for missing capabilities.
-6. [ ] Implement Validation Sandbox: A node that executes the generated code in a subprocess to test for errors (and self-corrects on failure).
-7. [ ] Implement Graduation HITL Checkpoint: Present successful sandboxed code to the user for final approval before moving it to the permanent `skills/` directory.
+5. [x] Implement Skill Generator Node: An LLM node prompted as an expert engineer to write python functions + Pydantic schemas for missing capabilities.
+6. [x] Implement Validation Sandbox: A node that executes the generated code in a subprocess to test for errors (and self-corrects on failure).
+7. [x] Implement Graduation HITL Checkpoint: Present successful sandboxed code to the user for final approval before moving it to the permanent `skills/` directory.
 
 ## Phase 4: DevOps (Fork Exclusive)
 1. [ ] CI/CD Pipelines
